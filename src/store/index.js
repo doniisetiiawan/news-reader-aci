@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { createStore } from 'redux';
 import { combineReducers } from 'redux-immutable';
 
@@ -13,4 +14,5 @@ export default createStore(
     Article,
   }),
   initialState,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__(),
 );
