@@ -11,14 +11,16 @@ class Article extends Component {
     fetchArticle: PropTypes.func.isRequired,
     fetchingArticle: PropTypes.func.isRequired,
     full: PropTypes.string.isRequired,
-    params: PropTypes.shape({
-      id: PropTypes.string.isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+      }),
     }).isRequired,
   };
 
   componentWillMount() {
     this.props.fetchingArticle();
-    this.props.fetchArticle(this.props.params.id);
+    this.props.fetchArticle(this.props.match.params.id);
   }
 
   render() {
@@ -34,11 +36,12 @@ export default connect(
     fetchingArticle: () => dispatch({
       type: 'FETCHING_ARTICLE',
     }),
+
     fetchArticle: (id) => {
       const headers = new Headers();
       headers.append('Accept', 'application/json');
 
-      fetch(`/api/articles/${id}`, { headers })
+      fetch(`http://localhost:3001/articles/${id}`, { headers })
         .then(resp => resp.json())
         .then(json => dispatch({
           type: 'FETCH_ARTICLE',

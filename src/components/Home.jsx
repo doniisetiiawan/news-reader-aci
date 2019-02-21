@@ -80,17 +80,19 @@ export default connect(
   (state, ownProps) => Object.assign(state.get('Home').toJS(), ownProps),
   dispatch => ({
     fetchingArticles: () => dispatch({ type: 'FETCHING_ARTICLES' }),
+
     fetchArticles: (filter) => {
       const headers = new Headers();
       headers.append('Accept', 'application/json');
 
-      fetch(`/api/articles/${filter}`, { headers })
+      fetch(`http://localhost:3001/articles/${filter}`, { headers })
         .then(resp => resp.json())
         .then(json => dispatch({
           type: 'FETCH_ARTICLES',
           payload: json,
         }));
     },
+
     toggleArticle: payload => dispatch({
       type: 'TOGGLE_ARTICLE',
       payload,
