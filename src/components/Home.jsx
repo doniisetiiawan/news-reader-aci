@@ -1,9 +1,7 @@
-/* eslint-disable no-undef */
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Map } from 'immutable';
 
 const listStyle = {
   listStyle: 'none',
@@ -23,27 +21,11 @@ const titleStyle = {
   padding: '5px 0',
 };
 
-const emptyMap = Map()
-  .set(true, <li style={listItemStyle}>...</li>)
-  .set(false, null);
-
 class Home extends Component {
-  static defaultProps = {
-    filter: '',
-  };
-
-  static propTypes = {
-    articles: PropTypes.arrayOf(PropTypes.object).isRequired,
-    fetchArticles: PropTypes.func.isRequired,
-    fetchingArticles: PropTypes.func.isRequired,
-    filter: PropTypes.string,
-    toggleArticle: PropTypes.func.isRequired,
-  };
-
-  componentWillMount() {
+  componentDidMount = () => {
     this.props.fetchingArticles();
     this.props.fetchArticles(this.props.filter);
-  }
+  };
 
   onTitleClick = id => () => this.props.toggleArticle(id);
 
@@ -53,7 +35,9 @@ class Home extends Component {
 
     return (
       <ul style={listStyle}>
-        {emptyMap.get(articles.length === 0)}
+        {articles.length === 0 ? (
+          <li style={listItemStyle}>...</li>
+        ) : null}
         {articles.map(a => (
           <li key={a.id} style={listItemStyle}>
             <button
@@ -65,7 +49,10 @@ class Home extends Component {
             </button>
             <p style={{ display: a.display }}>
               <small>
-                <span>{a.summary}</span>
+                <span>
+                  {a.summary}
+                  {' '}
+                </span>
                 <Link to={`articles/${a.id}`}>More...</Link>
               </small>
             </p>
@@ -77,15 +64,17 @@ class Home extends Component {
 }
 
 export default connect(
-  (state, ownProps) => Object.assign(state.get('Home').toJS(), ownProps),
+  (state, ownProps) => ({ ...state.Home, ...ownProps }),
   dispatch => ({
-    fetchingArticles: () => dispatch({ type: 'FETCHING_ARTICLES' }),
+    fetchingArticles: () => dispatch({
+      type: 'FETCHING_ARTICLES',
+    }),
 
     fetchArticles: (filter) => {
       const headers = new Headers();
       headers.append('Accept', 'application/json');
 
-      fetch(`http://localhost:3001/articles/${filter}`, { headers })
+      fetch(`/api/articles/${filter}`, { headers })
         .then(resp => resp.json())
         .then(json => dispatch({
           type: 'FETCH_ARTICLES',
@@ -99,3 +88,7 @@ export default connect(
     }),
   }),
 )(Home);
+
+Home.defaultProps = {
+  filter: '',
+};

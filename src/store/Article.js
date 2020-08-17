@@ -1,13 +1,18 @@
-import { fromJS } from 'immutable';
+import initialState from './initialState';
 
-const typeMap = fromJS({
-  FETCHING_ARTICLE: state => state.set('full', '...'),
+const typeMap = {
+  FETCHING_ARTICLE: state => ({ ...state, full: '...' }),
+  FETCH_ARTICLE: (state, payload) => ({
+    ...state,
+    ...payload,
+  }),
+  FETCHING_ARTICLES: state => ({ full: '' }),
+};
 
-  FETCH_ARTICLE: (state, payload) => state.merge(payload),
-
-  FETCHING_ARTICLES: state => state
-    .clear()
-    .set('full', ''),
-});
-
-export default (state, { type, payload }) => typeMap.get(type, s => s)(state, payload);
+export default function Article(
+  state = initialState,
+  { type, payload },
+) {
+  const reducer = typeMap[type];
+  return reducer ? reducer(state, payload) : state;
+}

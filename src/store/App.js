@@ -1,25 +1,35 @@
-import { fromJS } from 'immutable';
 import initialState from './initialState';
 
-const title = initialState.getIn(['App', 'title']);
-
-const articleLinks = fromJS([
+const { title } = initialState.App;
+const articleLinks = [
   {
     name: 'Home',
     url: '/',
   },
-]);
+];
+const homeLinks = initialState.App.links;
+const typeMap = {
+  FETCHING_ARTICLE: state => ({
+    ...state,
+    title: '...',
+    articleLinks,
+  }),
+  FETCH_ARTICLE: (state, payload) => ({
+    ...state,
+    title: payload.title,
+  }),
+  FETCHING_ARTICLES: state => ({
+    ...state,
+    title,
+    links: homeLinks,
+  }),
+  FETCH_ARTICLES: state => ({ ...state, title }),
+};
 
-const homeLinks = initialState.getIn(['App', 'links']);
-
-const typeMap = fromJS({
-  FETCHING_ARTICLE: state => state.set('title', '...').set('links', articleLinks),
-
-  FETCH_ARTICLE: (state, payload) => state.set('title', payload.title),
-
-  FETCHING_ARTICLES: state => state.set('title', title).set('links', homeLinks),
-
-  FETCH_ARTICLES: state => state.set('title', title),
-});
-
-export default (state, { type, payload }) => typeMap.get(type, () => state)(state, payload);
+export default function App(
+  state = initialState,
+  { type, payload },
+) {
+  const reducer = typeMap[type];
+  return reducer ? reducer(state, payload) : state;
+}

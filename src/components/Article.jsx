@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 const textStyle = {
@@ -7,41 +6,30 @@ const textStyle = {
 };
 
 class Article extends Component {
-  static propTypes = {
-    fetchArticle: PropTypes.func.isRequired,
-    fetchingArticle: PropTypes.func.isRequired,
-    full: PropTypes.string.isRequired,
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-      }),
-    }).isRequired,
-  };
-
-  componentWillMount() {
+  componentDidMount = () => {
     this.props.fetchingArticle();
     this.props.fetchArticle(this.props.match.params.id);
-  }
+  };
 
   render() {
-    return (
-      <p style={textStyle}>{this.props.full}</p>
-    );
+    return <p style={textStyle}>{this.props.full}</p>;
   }
 }
 
 export default connect(
-  state => state.get('Article').toJS(),
+  state => (state, ownProps) => ({
+    ...state.Article,
+    ...ownProps,
+  }),
   dispatch => ({
     fetchingArticle: () => dispatch({
       type: 'FETCHING_ARTICLE',
     }),
-
     fetchArticle: (id) => {
       const headers = new Headers();
       headers.append('Accept', 'application/json');
 
-      fetch(`http://localhost:3001/articles/${id}`, { headers })
+      fetch(`/api/articles/${id}`, { headers })
         .then(resp => resp.json())
         .then(json => dispatch({
           type: 'FETCH_ARTICLE',

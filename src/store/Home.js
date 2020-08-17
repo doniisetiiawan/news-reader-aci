@@ -1,21 +1,37 @@
-import { fromJS } from 'immutable';
+import initialState from './initialState';
 
-const typeMap = fromJS({
-  FETCHING_ARTICLES: state => state.update('articles', a => a.clear()),
+const typeMap = {
+  FETCHING_ARTICLES: state => ({
+    ...state,
+    articles: [],
+  }),
+  FETCH_ARTICLES: (state, payload) => ({
+    ...state,
+    articles: payload.map(a => ({
+      ...a,
+      display: 'none',
+    })),
+  }),
+  TOGGLE_ARTICLE: (state, id) => {
+    const articles = [...state.articles];
+    const index = articles.findIndex(a => a.id === id);
 
-  FETCH_ARTICLES: (state, payload) => state.set(
-    'articles',
-    fromJS(payload)
-      .map(a => a.set('display', 'none')),
-  ),
+    articles[index] = {
+      ...articles[index],
+      display:
+        articles[index].display === 'none'
+          ? 'block'
+          : 'none',
+    };
 
-  TOGGLE_ARTICLE: (state, id) => state.updateIn([
-    'articles',
-    state
-      .get('articles')
-      .findIndex(a => a.get('id') === id),
-    'display',
-  ], display => (display === 'none' ? 'block' : 'none')),
-});
+    return { ...state, articles };
+  },
+};
 
-export default (state, { type, payload }) => typeMap.get(type, s => s)(state, payload);
+export default function Home(
+  state = initialState,
+  { type, payload },
+) {
+  const reducer = typeMap[type];
+  return reducer ? reducer(state, payload) : state;
+}

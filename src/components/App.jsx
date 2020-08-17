@@ -1,5 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Route, NavLink } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  NavLink,
+} from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import Home from './Home';
@@ -25,12 +29,15 @@ const Global = articleList('global');
 const Tech = articleList('tech');
 const Sports = articleList('sports');
 
-export default connect(state => state.get('App').toJS())(
+export default connect(state => state.App)(
   ({ title, links }) => (
-    <BrowserRouter>
+    <Router>
       <main>
         <h1>{title}</h1>
         <ul style={categoryListStyle}>
+          {/* Renders a link for each article category.
+             The key thing to note is that the "links"
+             value comes from a Redux store. */}
           {links.map(l => (
             <li key={l.url} style={categoryItemStyle}>
               <NavLink
@@ -49,9 +56,13 @@ export default connect(state => state.get('App').toJS())(
           <Route exact path="/global" component={Global} />
           <Route exact path="/tech" component={Tech} />
           <Route exact path="/sports" component={Sports} />
-          <Route exact path="/articles/:id" component={Article} />
+          <Route
+            exact
+            path="/articles/:id"
+            component={Article}
+          />
         </section>
       </main>
-    </BrowserRouter>
+    </Router>
   ),
 );

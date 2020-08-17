@@ -1,6 +1,4 @@
-import { fromJS } from 'immutable';
-
-export default fromJS({
+export default {
   App: {
     title: 'Neckbeard News',
     links: [
@@ -11,12 +9,10 @@ export default fromJS({
       { name: 'Sports', url: '/sports' },
     ],
   },
-
   Home: {
     articles: [],
   },
-
   Article: {
     full: '',
   },
-});
+};
